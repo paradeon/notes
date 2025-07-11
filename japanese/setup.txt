@@ -1,0 +1,10 @@
+brew tap daipeihust/tap
+brew install im-select
+
+im-select
+com.apple.keylayout.USExtended
+com.apple.inputmethod.Kotoeri.RomajiTyping.Japanese
+com.apple.inputmethod.TYIM.Cangjie
+
+
+

@@ -1,0 +1,165 @@
+* Checking Java Process Context Switches in Linux
+
+** 1. Find the Java Process PID
+   #+BEGIN_SRC shell
+   ps aux | grep java
+   # or
+   pgrep -fl java
+   #+END_SRC
+
+** 2. Check Context Switches via /proc
+   #+BEGIN_SRC shell
+   cat /proc/<pid>/status | grep ctxt
+   #+END_SRC
+
+   Example output:
+   #+BEGIN_EXAMPLE
+   voluntary_ctxt_switches:        1000
+   nonvoluntary_ctxt_switches:     300
+   #+END_EXAMPLE
+
+** 3. Live Monitoring with pidstat
+   Install if needed:
+   #+BEGIN_SRC shell
+   sudo apt install sysstat
+   #+END_SRC
+
+   Run live monitoring:
+   #+BEGIN_SRC shell
+   pidstat -w -p <pid> 1
+   #+END_SRC
+
+   Output:
+   #+BEGIN_EXAMPLE
+   #      Time   UID       PID   cswch/s nvcswch/s  Command
+   12:00:01   1000     12345      30.00     25.00  java
+   #+END_EXAMPLE
+
+** 4. Lifetime Stats with /usr/bin/time
+   #+BEGIN_SRC shell
+   /usr/bin/time -v java MyApp
+   #+END_SRC
+
+   Example output:
+   #+BEGIN_EXAMPLE
+   Voluntary context switches:  2000
+   Involuntary context switches:  400
+   #+END_EXAMPLE
+
+** 5. Summary Table
+
+   | Method                    | Use                                |
+   |---------------------------+-------------------------------------|
+   | /proc/<pid>/status        | Snapshot of context switch counts   |
+   | pidstat -w -p <pid>       | Live monitoring per second          |
+   | /usr/bin/time -v          | Summary for full program execution  |
+   | perf stat (optional)      | Advanced profiling                  |
+
+* Profiling with VisualVM
+- try to use instrumentation instead of sampling
+** Use the Instrumenter for Accurate Profiling of Short Methods
+
+To reliably capture methods that run only a few milliseconds:
+
+1. Launch your Java application with VisualVM attached.
+2. Go to the =Profiler= tab.
+3. Click on =CPU= to enable CPU profiling.
+4. In the dropdown menu, select =Instrument= mode (not Sample).
+5. (Optional) Click on =Settings → Advanced= and enable:
+   - =Instrument all classes and methods= if your method is not in the default set.
+6. Narrow down profiling scope:
+   - Filter by package, class, or method name to reduce overhead.
+7. Click =Start= just before your short-lived method is executed.
+8. Click =Stop= immediately after the method completes.
+
+*** Notes
+- Instrumentation records every method entry and exit, so it will capture even very short-lived methods.
+- Overhead is higher than sampling, so it’s best used in controlled environments.
+- If the method runs too early, add a warm-up delay (e.g., Thread.sleep or a prompt).
+
+*** JVM Tip
+You can prevent method inlining (which might cause the method to disappear from the profiler) using:
+
+#+BEGIN_SRC shell
+java -XX:-Inline -cp yourapp.jar com.example.YourClass
+#+END_SRC
+* Optimization
+- use warmup loop?
+
+
+
+* perf for linux kernel
+	perf record java ...
+	perf report
+
+	https://perfwiki.github.io/main/
+	https://github.com/jvm-profiling-tools/perf-map-agent
+	https://bell-sw.com/announcements/2022/04/07/how-to-use-perf-to-monitor-java-performance/
+
+	-XX:+PreserveFramePointer # performance penalty (<5%)
+
+	* perf + flamegraph
+	 perf record
+	 perf script
+	 FlameGraph/stackcollapse-perf.pl
+	 FlameGraph/flamegraph.pl
+
+	 github.com/brendangregg/FlameGraph
+
+	* disadvantage
+	 no interpreted frame (only for for jit compiled code)
+	 perf-map-agent for symbols
+	 /proc/sys/kernel/perf_event_paranoid
+	 /proc/sys/kernel/perf_event_max_stack = 127
+
+* wall clock profiling
+	event=wall
+	include=*.main to profile only  things under main method
+* others
+** built ins:
+ 	- cpu (perf events or timer based)
+ 	- wall 
+ 	- alloc
+ 	- lock
+** PMU
+ 	- cycles, bus-cycles
+ 	- instructions
+ 	- cache-references, cache-misses
+ 	- LLC-load-misses, dTLB-load-misses
+ 	- branches, branch-misses
+** kernel events
+ 	- page-faults
+ 	- context-switches
+** tracepoints
+ 	- syscalls:sys_enter_* syscalls:sys_exit_*
+ 	- sched:sched_wakeup
+ 	- filemap:mm_filemap_add_to_page_cache
+ 	- see 'perf list'
+** function breakpoints
+ 	- malloc (any name of a native function you want to profile, malloc is only an example here, others like mmap ...)
+ 	- mmap
+ 	- pthread_start
+** vm functions
+ 	- VMThread::execute
+ 	- Deoptimization::uncommon_trap
+ 	- G1CollectedHeap::humongous_obj_allocate
+ 	- java_lang_Throwable::fill_in_stack_trace
+** java methods
+ 	- MyClass.methodName
+ 	- MyClass.methodName(signature)V
+ 	- MyClass.*
+ 
+* allocation profiling
+	fast path: inlined, inside TLAB
+	slow path: call to vm runtime (this is what profiler is looking)
+** outside TLAB
+** allocation of new TLAB
+** allocation profiling in async-profiler
+	- intercept slow allcations in jvm runtime
+	- record allocation object + stack trace
+   
+* java api for async-profiler
+
+* jit compilation
+-XX:+PrintCompilation -XX:+UnlockDiagnosticVMOptions -XX:+PrintInlining
+

@@ -1,0 +1,41 @@
+* Setup scoop
+- Lazygit
+- autohotkey
+- bat
+- binutils
+- bzip2
+- bzip3
+- cmake
+- coreutils
+- curl
+- dark
+- docker
+- eza
+- f2f
+- findutils
+- git
+- gzip
+- make
+- mingw
+- msys2
+- neovim
+- openssh
+- ov
+- python
+- ripgrep
+- sioyek
+- starship
+- superfile
+- switcheroo: setup path to point to ~/scoop/apps/switcheroo/current/switcheroo.exe
+- tirc
+- usql
+- vim
+- visualvm
+- wezterm
+- wget2
+- which
+- winditt
+- yazi
+- zip
+- zoxide
+
