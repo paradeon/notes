@@ -1,0 +1,23 @@
+* debugging compiling code
+-Xint
+-XX:+PrintCompilation
+-XX:+UnlockDiagnosticVMOptions -XX:+PrintAssembly
+-XX:CompileCommandFile=.hotspot_compiler
+
+compileonly demo4/*.*
+exclude demo4/TextSearch.main
+print demo4/BoyerMooreTextSearchStrategy.indexOf
+
+* Configure error report
+-XX:ErrorFile=./hs_err_pid%p.log
+-XX:OnError="cat hs_err_pid%p.log|mail my@email.com"
+-XX:+ShowMessageBoxOnError
+
+-XX:+CreateMinidumpOnCrash (windows only)
+-XX:+UseOSErrorReporting
+-XX:+SuppressFatalErrorMessage
+
+* jhsdb in openjdk
+
+
+

@@ -1,0 +1,14 @@
+* vscode-vim setup
+https://github.com/VSCodeVim/Vim
+
+** Mac
+To enable key-repeating, execute the following in your Terminal, log out and back in, and then restart VS Code:
+defaults write com.microsoft.VSCode ApplePressAndHoldEnabled -bool false              # For VS Code
+defaults write com.microsoft.VSCodeInsiders ApplePressAndHoldEnabled -bool false      # For VS Code Insider
+defaults write com.vscodium ApplePressAndHoldEnabled -bool false                      # For VS Codium
+defaults write com.microsoft.VSCodeExploration ApplePressAndHoldEnabled -bool false   # For VS Codium Exploration users
+efaults delete -g ApplePressAndHoldEnabled                                           # If necessary, reset global default
+
+** Windows
+Like real vim, VSCodeVim will take over your control keys. This behavior can be adjusted with the useCtrlKeys and handleKeys settings.
+

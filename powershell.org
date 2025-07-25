@@ -1,0 +1,21 @@
+* how to make fish like intelliscence in powershwll
+  Ensure you are using PowerShell Core (PowerShell 7) for the latest features.
+	$PSVersionTable.PSVersion
+
+  - ***PSReadLine***: Provides command-line editing and syntax coloring.
+  Install-Module -Name PSReadLine -Force -SkipPublisherCheck
+
+  - ***Z***: Directory jumping capabilities.
+    Install-Module -Name z
+	
+	Import-Module PSReadLine
+	Set-PSReadLineOption -PredictionSource History
+	Set-PSReadLineOption -PredictionViewStyle InlineView # or ListView
+	Set-PSReadLineOption -PredictionSource HistoryAndPlugin
+
+	Set-PSReadLineKeyHandler -Key Tab -Function Complete
+	Set-PSReadLineKeyHandler -Key Ctrl+Spacebar -Function AcceptSuggestion
+
+	Optional: Install AI/Plugin predictors
+	Install-Module -Name Az.Tools.Predictor -Scope CurrentUser -Force
+	Enable-AzPredictor -AllSession
