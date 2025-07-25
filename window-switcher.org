@@ -1,0 +1,16 @@
+
+python3 -m venv venv
+cd window-switcher
+. bin/activate
+
+pip install -r requirements.txt
+
+# python -m ensurepip --upgrade
+
+pip install pyobjc-framework-AppKit
+pip install psutil
+pip install pillow
+
+# pip install pygetwindow pyobjc-framework-Quartz
+
+pip freeze > requirements.txt
