@@ -10,3 +10,8 @@
   [2025-07-09 Wed]
 * TODO [#A] Decide if I am staying in SG or to TK, or more where do I want to migrate in a longer term?
   [2025-07-09 Wed]
+* TODO put .config/ to github, manage the other repos as submodule
+* TODO setup qemu for win10 development locally
+  [2025-07-26 Sat]
+* TODO window-switcher for windows (and possibly mac)
+  [2025-07-26 Sat]
